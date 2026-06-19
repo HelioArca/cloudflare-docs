@@ -22,6 +22,12 @@ When you make a `HEAD` request for a cacheable resource and Cloudflare does not 
 
 ## Interaction of `Set-Cookie` response header with Cache
 
+When Cloudflare caches a response, `Set-Cookie` headers are always removed from the cached copy. There is currently no way to cache a response while preserving origin `Set-Cookie` headers. If your origin needs to set cookies, the response must either bypass cache or be served as a cache MISS.
+
+The RFC-compliant `cache-control: no-cache="set-cookie"` directive (cache the body but always revalidate for fresh headers) is not currently supported.
+
+### Existing behavior
+
 For non-cacheable requests, `Set-Cookie` is always preserved. For cacheable requests, there are three possible behaviors:
 
 * `Set-Cookie` is returned from origin and the default cache level is used. If [origin cache control](/cache/concepts/cache-control/) is not enabled, Cloudflare removes the `Set-Cookie` and caches the asset. If origin cache control is enabled, Cloudflare does not cache the asset and preserves the `Set-Cookie`. A cache status of `BYPASS` is returned.
